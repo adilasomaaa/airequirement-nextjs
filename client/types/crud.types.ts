@@ -9,14 +9,18 @@ export type InputFieldType =
   | "file" 
   | "image" 
   | "select" 
+  | "multiselect"
   | "textarea"
   | "checkbox"
 
+// Column configuration for DataTable
 // Column configuration for DataTable
 export interface ColumnConfig<T = any> {
   key: string
   label: string
   type?: "text" | "date" | "datetime" | "badge" | "image" | "number"
+  width?: string
+  className?: string
   render?: (value: any, row: T) => React.ReactNode
   renderCell?: (row: T) => React.ReactNode
 }

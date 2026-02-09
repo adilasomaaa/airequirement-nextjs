@@ -8,17 +8,17 @@ import {
   ShowModal,
   DeleteModal,
 } from "@/components/crud"
-import { usersCrudConfig } from "./config"
-import { useUsers } from "./useUsers"
+import { rolesCrudConfig } from "./config"
 import { Plus, Search } from "lucide-react"
-import { useRoles } from "../roles/useRoles"
+import { useRoles } from "./useRoles"
 import { useMemo } from "react"
+import { usePermissions } from "../permissions/usePermissions"
 
-export default function UsersPage() {
-  const config = usersCrudConfig
+export default function PermissionsPage() {
+  const config = rolesCrudConfig
   const {
-    users,
-    selectedUser,
+    roles,
+    selectedRole,
     isLoading,
     isSubmitting,
     serverErrors,
@@ -44,16 +44,16 @@ export default function UsersPage() {
     setSearch,
     setPage,
     setLimit,
-  } = useUsers({ config })
+  } = useRoles({ config })
 
-  const { roles } = useRoles({initialLimit:100})
+  const { permissions } = usePermissions({ initialLimit: 100 })
 
-  const dynamicCreateFields = useMemo(() => {
+  const dynamicFormFields = useMemo(() => {
     return config.createFields.map((field) => {
-      if (field.name === "roleId") {
+      if (field.name === "permissions") {
         return {
           ...field,
-          options: roles.map((p) => ({
+          options: permissions.map((p) => ({
             label: p.name,
             value: p.id,
           })),
@@ -61,22 +61,7 @@ export default function UsersPage() {
       }
       return field
     })
-  }, [roles, config.createFields])
-
-  const dynamicEditFields = useMemo(() => {
-    return config.editFields.map((field) => {
-      if (field.name === "roleId") {
-        return {
-          ...field,
-          options: roles.map((p) => ({
-            label: p.name,
-            value: p.id,
-          })),
-        }
-      }
-      return field
-    })
-  }, [roles, config.editFields])
+  }, [permissions])
 
   return (
     <div className="space-y-6">
@@ -101,12 +86,12 @@ export default function UsersPage() {
           placeholder={`Cari ${config.namePlural.toLowerCase()}...`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 bg-white"
+          className="pl-9"
         />
       </div>
 
       <DataTable
-        data={users}
+        data={roles}
         columns={config.columns}
         onView={onView}
         onEdit={onEdit}
@@ -130,7 +115,7 @@ export default function UsersPage() {
           resetServerErrors()
         }}
         mode="create"
-        fields={dynamicCreateFields}
+        fields={dynamicFormFields}
         onSubmit={handleCreate}
         title={`Tambah ${config.name}`}
         isLoading={isSubmitting}
@@ -144,8 +129,17 @@ export default function UsersPage() {
           resetServerErrors()
         }}
         mode="edit"
-        fields={dynamicEditFields}
-        initialData={selectedUser || undefined}
+        fields={dynamicFormFields}
+        initialData={
+          selectedRole
+            ? {
+                ...selectedRole,
+                permissions: selectedRole.rolePermissions?.map(
+                  (rp: any) => rp.permission.id
+                ),
+              }
+            : undefined
+        }
         onSubmit={handleUpdate}
         title={`Edit ${config.name}`}
         isLoading={isSubmitting}
@@ -155,7 +149,7 @@ export default function UsersPage() {
       <ShowModal
         isOpen={showViewModal}
         onClose={() => setShowViewModal(false)}
-        data={selectedUser}
+        data={selectedRole}
         fields={config.showFields}
         title={`Detail ${config.name}`}
       />
@@ -165,7 +159,7 @@ export default function UsersPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
         title={`Hapus ${config.name}`}
-        message={`Apakah Anda yakin ingin menghapus ${config.name.toLowerCase()} "${selectedUser?.name || selectedUser?.email}"? Tindakan ini tidak dapat dibatalkan.`}
+        message={`Apakah Anda yakin ingin menghapus ${config.name.toLowerCase()} "${selectedRole?.name}"? Tindakan ini tidak dapat dibatalkan.`}
         isLoading={isSubmitting}
       />
     </div>

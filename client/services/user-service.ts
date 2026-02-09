@@ -2,7 +2,6 @@ import { fetcher } from "@/lib/fetcher";
 import { 
   ApiResult, 
   ApiPaginatedResult,
-  PaginationMeta 
 } from "@/client/types/api-response.types";
 import { 
   CreateUserDtoType, 
@@ -10,17 +9,20 @@ import {
   UsersQueryDtoType 
 } from "@/server/users/users.dto";
 
-// User response type (matching what API returns)
 export interface User {
   id: number;
   name: string | null;
   email: string;
-  createdAt: string;
-  updatedAt: string;
+  userRoles: {
+    role: {
+      name: string;
+    };
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const userService = {
-  // Get all users with pagination
   getAll: async (query: Partial<UsersQueryDtoType> = {}) => {
     const params = new URLSearchParams();
     if (query.page) params.set("page", String(query.page));

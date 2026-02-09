@@ -147,64 +147,46 @@ async function main() {
 
   // Admin user
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
+    where: { email: 'admin@app.id' },
     update: {},
     create: {
       name: 'Administrator',
-      email: 'admin@example.com',
+      email: 'admin@app.id',
       password: hashedPassword,
+      role: {
+        connect: {
+          id: adminRole.id,
+        },
+      },
     },
   });
 
-  // Assign Admin role to admin user
-  await prisma.userRoles.upsert({
-    where: {
-      userId_roleId: {
-        userId: adminUser.id,
-        roleId: adminRole.id,
-      },
-    },
-    update: {},
-    create: {
-      userId: adminUser.id,
-      roleId: adminRole.id,
-    },
-  });
-  console.log('✅ Created admin user: admin@example.com');
+  
 
   // Client user
   const clientUser = await prisma.user.upsert({
-    where: { email: 'client@example.com' },
+    where: { email: 'client@app.id' },
     update: {},
     create: {
       name: 'Client User',
-      email: 'client@example.com',
+      email: 'client@app.id',
       password: hashedPassword,
+      role: {
+        connect: {
+          id: clientRole.id,
+        },
+      },
     },
   });
 
-  // Assign Client role to client user
-  await prisma.userRoles.upsert({
-    where: {
-      userId_roleId: {
-        userId: clientUser.id,
-        roleId: clientRole.id,
-      },
-    },
-    update: {},
-    create: {
-      userId: clientUser.id,
-      roleId: clientRole.id,
-    },
-  });
-  console.log('✅ Created client user: client@example.com');
+  console.log('✅ Created client user: client@app.id');
 
   console.log('');
   console.log('🎉 Seed completed!');
   console.log('');
   console.log('Login credentials:');
-  console.log('  Admin: admin@example.com / password123');
-  console.log('  Client: client@example.com / password123');
+  console.log('  Admin: admin@app.id / password123');
+  console.log('  Client: client@app.id / password123');
 }
 
 main()

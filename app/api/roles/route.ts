@@ -5,15 +5,15 @@ import {
   errorResponse,
   errorWithData,
 } from "@/lib/api-response";
-import { PermissionAlreadyExistsError } from "@/server/permissions/permissions.error";
-import { CreatePermissionDto, PermissionsQueryDto } from "@/server/permissions/permissions.dto";
-import { permissionsUseCase } from "@/server/permissions/permissions.usecase";
+import { CreateRoleDto, RolesQueryDto } from "@/server/roles/roles.dto";
+import { rolesUseCase } from "@/server/roles/roles.usecase";
+import { RoleAlreadyExistsError } from "@/server/roles/roles.error";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     
-    const queryValidation = PermissionsQueryDto.safeParse({
+    const queryValidation = RolesQueryDto.safeParse({
       page: searchParams.get("page") || 1,
       limit: searchParams.get("limit") || 10,
       search: searchParams.get("search") || undefined,
@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const result = await permissionsUseCase.getAllPermissions(queryValidation.data);
-    return successWithPaginate(result.data, result.meta, "Data permission berhasil diambil");
+    const result = await rolesUseCase.getAllRoles(queryValidation.data);
+    return successWithPaginate(result.data, result.meta, "Data role berhasil diambil");
   } catch (error) {
     console.error(error);
     return errorResponse("Terjadi kesalahan internal server", 500);
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const validation = CreatePermissionDto.safeParse(body);
+    const validation = CreateRoleDto.safeParse(body);
 
     if (!validation.success) {
       return errorWithData(
@@ -49,12 +49,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const permission = await permissionsUseCase.createPermission(validation.data);
+    const role = await rolesUseCase.createRole(validation.data);
 
-    return successWithData(permission, "Permission berhasil dibuat", 201);
+    return successWithData(role, "Role berhasil dibuat", 201);
   } catch (error) {
     console.error(error);
-    if (error instanceof PermissionAlreadyExistsError) {
+    if (error instanceof RoleAlreadyExistsError) {
       return errorResponse(error.message, 400);
     }
     return errorResponse("Terjadi kesalahan internal server", 500);

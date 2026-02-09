@@ -19,11 +19,7 @@ const handler = NextAuth({
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
           include: {
-            userRoles: {
-              include: {
-                role: true,
-              },
-            },
+            role: true
           },
         })
 
@@ -40,7 +36,7 @@ const handler = NextAuth({
           id: String(user.id),
           name: user.name,
           email: user.email,
-          roles: user.userRoles.map((role) => role.role.name) || '-',
+          roles: user.role.name || '-',
         }
       },
     }),

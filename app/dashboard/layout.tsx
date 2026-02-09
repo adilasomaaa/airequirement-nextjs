@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import Sidebar from "@/components/dashboard/Sidebar"
 import Navbar from "@/components/dashboard/Navbar"
 import Footer from "@/components/dashboard/Footer"
+import { DashboardProvider } from "@/components/dashboard/DashboardContext"
 
 export default async function DashboardLayout({
   children,
@@ -16,16 +17,18 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Sidebar />
-      <Navbar />
+    <DashboardProvider>
+      <div className="min-h-screen bg-slate-50">
+        <Sidebar />
+        <Navbar />
 
-      <main className="ml-64 min-h-screen pt-16">
-        <div className="p-6">
-          {children}
-        </div>
-        <Footer />
-      </main>
-    </div>
+        <main className="flex min-h-screen flex-col pt-16 transition-all duration-300 md:ml-64">
+          <div className="flex-1 p-4 md:p-6">
+            {children}
+          </div>
+          <Footer />
+        </main>
+      </div>
+    </DashboardProvider>
   )
 }

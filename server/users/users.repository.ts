@@ -18,6 +18,8 @@ export const usersRepository = {
         id: true,
         name: true,
         email: true,
+        roleId: true,
+        role: true,
         createdAt: true,
         updatedAt: true,
       },

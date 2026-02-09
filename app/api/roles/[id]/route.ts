@@ -6,9 +6,9 @@ import {
   errorResponse,
   errorWithData,
 } from "@/lib/api-response";
-import { PermissionAlreadyExistsError, PermissionNotFoundError } from "@/server/permissions/permissions.error";
-import { permissionsUseCase } from "@/server/permissions/permissions.usecase";
-import { UpdatePermissionDto } from "@/server/permissions/permissions.dto";
+import { rolesUseCase } from "@/server/roles/roles.usecase";
+import { RoleAlreadyExistsError, RoleNotFoundError } from "@/server/roles/roles.error";
+import { UpdateRoleDto } from "@/server/roles/roles.dto";
 
 interface Props {
   params: {
@@ -31,10 +31,10 @@ export async function GET(
   if (!id) return errorResponse("ID user tidak valid", 400);
 
   try {
-    const permission = await permissionsUseCase.getPermissionById(id);
+    const permission = await rolesUseCase.getRoleById(id);
     return successWithData(permission, "Data permission berhasil diambil");
   } catch (error) {
-    if (error instanceof PermissionNotFoundError) {
+    if (error instanceof RoleNotFoundError) {
       return errorResponse(error.message, 404);
     }
     console.error(error);
@@ -52,7 +52,7 @@ export async function PUT(
 
   try {
     const body = await req.json();
-    const validation = UpdatePermissionDto.safeParse(body);
+    const validation = UpdateRoleDto.safeParse(body);
 
     if (!validation.success) {
       return errorWithData(
@@ -62,13 +62,13 @@ export async function PUT(
       );
     }
 
-    const permission = await permissionsUseCase.updatePermission(id, validation.data);
+    const permission = await rolesUseCase.updateRole(id, validation.data);
     return successWithData(permission, "Permission berhasil diupdate");
   } catch (error) {
-    if (error instanceof PermissionNotFoundError) {
+    if (error instanceof RoleNotFoundError) {
       return errorResponse(error.message, 404);
     }
-    if (error instanceof PermissionAlreadyExistsError) {
+    if (error instanceof RoleAlreadyExistsError) {
       return errorResponse(error.message, 400);
     }
     console.error(error);
@@ -85,10 +85,10 @@ export async function DELETE(
   if (!id) return errorResponse("ID user tidak valid", 400);
 
   try {
-    await permissionsUseCase.deletePermission(id);
-    return successWithData(null, "Permission berhasil dihapus");
+    await rolesUseCase.deleteRole(id);
+    return successWithData(null, "Role berhasil dihapus");
   } catch (error) {
-    if (error instanceof PermissionNotFoundError) {
+    if (error instanceof RoleNotFoundError) {
       return errorResponse(error.message, 404);
     }
     console.error(error);

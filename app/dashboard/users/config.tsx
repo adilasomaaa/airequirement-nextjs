@@ -9,6 +9,7 @@ export const usersCrudConfig: CrudConfig = {
   columns: [
     { key: "name", label: "Nama" },
     { key: "email", label: "Email" },
+    { key: "roleId", label: "Role", render: (value, row) => row.role.name },
     { key: "createdAt", label: "Dibuat", type: "date" },
   ],
 
@@ -26,6 +27,14 @@ export const usersCrudConfig: CrudConfig = {
       type: "email",
       placeholder: "Masukkan email",
       required: true,
+    },
+    {
+      name: "roleId",
+      label: "Peran",
+      type: "select",
+      placeholder: "Pilih Peran",
+      options: [],
+      required: false,
     },
     {
       name: "password",
@@ -48,6 +57,14 @@ export const usersCrudConfig: CrudConfig = {
       label: "Email",
       type: "email",
       placeholder: "Masukkan email",
+    },
+    {
+      name: "roleId",
+      label: "Peran",
+      type: "select",
+      placeholder: "Pilih Peran",
+      options: [],
+      required: false,
     },
     {
       name: "password",

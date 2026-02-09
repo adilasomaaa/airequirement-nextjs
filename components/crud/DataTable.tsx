@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Eye, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 function formatValue<T>(value: any, column: ColumnConfig<T>, row: T): React.ReactNode {
   if (value === null || value === undefined) return "-"
@@ -87,34 +88,59 @@ export default function DataTable<T extends Record<string, any>>({
   const DefaultActions = ({ row }: { row: T }) => (
     <div className="flex items-center justify-center gap-1">
       {onView && (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onView(row)}
-          className="h-8 w-8 p-0"
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
+        <>
+          <Tooltip>
+            <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onView(row)}
+              className="h-8 w-8 p-0"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Lihat</p>
+          </TooltipContent>
+        </Tooltip>
+        </>
       )}
       {onEdit && (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onEdit(row)}
-          className="h-8 w-8 p-0"
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
+        <>
+          <Tooltip>
+            <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onEdit(row)}
+              className="h-8 w-8 p-0"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Ubah</p>
+            </TooltipContent>
+          </Tooltip>
+        </>
       )}
       {onDelete && (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onDelete(row)}
-          className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onDelete(row)}
+            className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Hapus</p>
+          </TooltipContent>
+        </Tooltip>
       )}
     </div>
   )
@@ -125,9 +151,11 @@ export default function DataTable<T extends Record<string, any>>({
         <Table className="bg-white rounded-lg">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">#</TableHead>
+              <TableHead className="w-12 text-center">#</TableHead>
               {columns.map((col) => (
-                <TableHead key={col.key}>{col.label}</TableHead>
+                <TableHead key={col.key} style={{ width: col.width }} className={col.className}>
+                  {col.label}
+                </TableHead>
               ))}
               {hasActions && (
                 <TableHead className="text-center">Aksi</TableHead>
@@ -147,16 +175,16 @@ export default function DataTable<T extends Record<string, any>>({
             ) : (
               data.map((row, index) => (
                 <TableRow key={row[primaryKey] || index}>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-muted-foreground text-center">
                     {getRowNumber(index)}
                   </TableCell>
                   {columns.map((col) => (
-                    <TableCell key={col.key}>
+                    <TableCell key={col.key} style={{ width: col.width }} className={col.className}>
                       {formatValue(row[col.key], col, row)}
                     </TableCell>
                   ))}
                   {hasActions && (
-                    <TableCell className="text-center">
+                    <TableCell className="text-center w-50">
                       {renderActions 
                         ? renderActions(row, <DefaultActions row={row} />)
                         : <DefaultActions row={row} />
